@@ -1,0 +1,92 @@
+<nav class="navbar navbar-expand-lg"
+     style="background-color:#6D4C41;"
+     th:fragment="navbar">
+
+    <div class="container">
+
+        <!-- Brand -->
+        <a class="navbar-brand text-white fw-bold"
+           href="/"
+           style="font-size:1.4rem;">
+            Simple Blog
+        </a>
+
+        <!-- Mobile toggle -->
+        <button class="navbar-toggler bg-light"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navMenu"
+                aria-controls="navMenu"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+
+        <div class="collapse navbar-collapse" id="navMenu">
+
+            <!-- LEFT SIDE -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="/">Home</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="/posts">All Posts</a>
+                </li>
+
+                <!-- ADMIN DASHBOARD -->
+                <li class="nav-item"
+                    th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
+                    <a class="nav-link text-white" href="/admin/posts">Dashboard</a>
+                </li>
+
+            </ul>
+
+            <!-- RIGHT SIDE -->
+            <ul class="navbar-nav ms-auto">
+
+                <!-- If NOT logged in -->
+                <li class="nav-item"
+                    th:if="${not #authorization.expression('isAuthenticated()')}">
+                    <a class="btn text-white"
+                       style="background-color:#FF7043;"
+                       href="/login">Login</a>
+                </li>
+
+                <li class="nav-item ms-2"
+                    th:if="${not #authorization.expression('isAuthenticated()')}">
+                    <a class="btn text-white"
+                       style="background-color:#FF8A65;"
+                       href="/register">Register</a>
+                </li>
+
+                <!-- If LOGGED IN -->
+                <li class="nav-item dropdown"
+                    th:if="${#authorization.expression('isAuthenticated()')}">
+
+                    <a class="nav-link dropdown-toggle text-white"
+                       id="userMenu"
+                       role="button"
+                       data-bs-toggle="dropdown">
+
+                        👤 <span th:text="${#authentication.name}">User</span>
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item text-danger" href="/logout">
+                                Logout
+                            </a>
+                        </li>
+                    </ul>
+
+                </li>
+
+            </ul>
+
+        </div>
+    </div>
+</nav>

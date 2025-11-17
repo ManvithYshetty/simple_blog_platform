@@ -1,8 +1,11 @@
 package com.blogplatform.simpleblogplatform.service;
 
 import com.blogplatform.simpleblogplatform.model.Post;
+import com.blogplatform.simpleblogplatform.model.User;
 import com.blogplatform.simpleblogplatform.repository.PostRepository;
+import com.blogplatform.simpleblogplatform.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,9 +14,11 @@ import java.util.List;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
-    public PostService(PostRepository postRepository) {
+    public PostService(PostRepository postRepository, UserRepository userRepository) {
         this.postRepository = postRepository;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -32,14 +37,33 @@ public class PostService {
     }
 
     /**
-     * Saves a Post entity. Handles both creation and updates.
+     * NEW: Save a new post or update an existing one.
+     * This now links the post to the logged-in user + sets createdAt.
      */
-    public Post savePost(Post post) {
-        if (post.getId() == null) {
-            post.setCreatedAt(LocalDateTime.now());
-        }
-        return postRepository.save(post);
+     @Transactional
+    public Post savePost(Post postFromForm, String username) {
+
+    // ID = null OR ID = 0  → treat as NEW POST
+    if (postFromForm.getId() == null || postFromForm.getId() == 0) {
+
+        User author = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalStateException("User not found: " + username));
+
+        postFromForm.setUser(author);
+        postFromForm.setCreatedAt(LocalDateTime.now());
+
+        return postRepository.save(postFromForm);
     }
+
+    // --- UPDATE ---
+    Post existingPost = postRepository.findById(postFromForm.getId())
+            .orElseThrow(() -> new IllegalArgumentException("Invalid post Id: " + postFromForm.getId()));
+
+    existingPost.setTitle(postFromForm.getTitle());
+    existingPost.setContent(postFromForm.getContent());
+
+    return postRepository.save(existingPost);
+}
 
     /**
      * Deletes a Post from the database by its ID.

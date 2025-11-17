@@ -39,6 +39,14 @@ public class PostController {
         // Return the name of the template to load (home.html)
         return "home";
     }
+
+    @GetMapping("/posts")
+        public String showAllPosts(Model model) {
+        List<Post> posts = postService.findAllPosts();
+        model.addAttribute("posts", posts);
+        return "all-posts";   // ← new HTML page
+}
+
     @GetMapping("/posts/{id}")
     public String showPostDetail(@PathVariable Long id, Model model) {
         // Fetch the post by ID

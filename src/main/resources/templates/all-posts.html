@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>All Posts</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body { background-color:#FFF8E1; color:#3E2723; }
+        .post-card {
+            background:white; 
+            padding:20px; 
+            border-radius:12px;
+            margin-bottom:20px;
+            box-shadow:0 4px 10px rgba(0,0,0,0.1);
+        }
+        .btn-read {
+            background-color:#FF7043;
+            color:white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container mt-4">
+
+        <h1 class="mb-4" style="color:#6D4C41;">All Blog Posts</h1>
+
+        <div th:if="${posts.isEmpty()}">
+            <p>No posts available.</p>
+        </div>
+
+        <div th:each="post : ${posts}" class="post-card">
+
+            <h3 th:text="${post.title}"></h3>
+
+            <p th:text="${#strings.abbreviate(post.content, 140)}"></p>
+
+            <a th:href="@{/posts/{id}(id=${post.id})}" 
+               class="btn btn-read">
+               Read More
+            </a>
+
+        </div>
+
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

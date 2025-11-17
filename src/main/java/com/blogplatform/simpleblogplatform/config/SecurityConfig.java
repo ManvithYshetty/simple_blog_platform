@@ -2,7 +2,7 @@ package com.blogplatform.simpleblogplatform.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod; // NEW: Import HttpMethod for specifying request types
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -26,31 +26,33 @@ public class SecurityConfig {
             .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
             .authorizeHttpRequests(auth -> auth
 
-                // MUST BE FIRST
+                // H2 console
                 .requestMatchers("/h2-console/**").permitAll()
 
-                // Public static files
-                .requestMatchers("/css/**", "/js/**").permitAll()
+                // Static files
+                .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
 
                 // Public pages
-                .requestMatchers(HttpMethod.GET, "/", "/posts", "/posts/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/register", "/login").permitAll()
-                .requestMatchers(HttpMethod.POST, "/register", "/login").permitAll()
+                .requestMatchers("/", "/posts", "/posts/**").permitAll()
+                .requestMatchers("/login", "/register").permitAll()
 
-                // Admin routes
+                // Comments: only logged in users
+                .requestMatchers(HttpMethod.POST, "/posts/*/comments")
+                    .authenticated()
+
+                // Admin only
                 .requestMatchers("/admin/**").hasRole("ADMIN")
 
-                // Comment submission
-                .requestMatchers(HttpMethod.POST, "/posts/*/comments")
-                    .hasAnyRole("USER", "ADMIN")
-
-                // ANYTHING ELSE must be after all matchers
-                .anyRequest().authenticated()
+                // Everything else is PUBLIC (important!)
+                .anyRequest().permitAll()
             )
+
             .formLogin(login -> login
                 .loginPage("/login")
+                .defaultSuccessUrl("/", true)
                 .permitAll()
             )
+
             .logout(logout -> logout
                 .logoutSuccessUrl("/")
                 .permitAll()

@@ -28,8 +28,7 @@ public class AuthController {
     public String processRegistration(@ModelAttribute("user") User user,RedirectAttributes redirectAttributes) {
         try {
             userService.registerUser(user);
-            redirectAttributes.addFlashAttribute("registrationSuccess",
-                    "Registration successful! Please log in.");
+            redirectAttributes.addFlashAttribute("registrationSuccess","Registration successful! Please log in.");
             return "redirect:/login";
 
         } catch (IllegalStateException e) {
