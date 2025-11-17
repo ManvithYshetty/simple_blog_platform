@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${post.title}">Post Title</title>
+</head>
+<body>
+
+    <!-- Main Post Content Section -->
+    <article>
+        <h1 th:text="${post.title}">Post Title Goes Here</h1>
+
+        <p>
+            <em>
+                Posted on 
+                <span th:text="${#temporals.format(post.createdAt, 'MMMM dd, yyyy')}">
+                    January 01, 2023
+                </span>
+            </em>
+        </p>
+
+        <div th:utext="${post.content}">
+            <p>This is where the full content of the blog post will appear.</p>
+        </div>
+    </article>
+
+    <hr/>
+
+    <!-- Comments Section -->
+    <section>
+        <h2>Comments</h2>
+
+        <div th:if="${!post.comments.isEmpty()}">
+            <div th:each="comment : ${post.comments}" 
+                 style="margin-bottom: 20px; border-left: 2px solid #ccc; padding-left: 15px;">
+
+                <p th:text="${comment.content}">This is a comment.</p>
+
+                <small>
+                    Comment by:
+                    <strong th:text="${comment.user != null ? comment.user.username : 'Anonymous'}">
+                        Username
+                    </strong>
+                    on
+                    <span th:text="${#temporals.format(comment.createdAt, 'MMM dd, yyyy HH:mm')}">
+                        Date
+                    </span>
+                </small>
+
+            </div>
+        </div>
+
+        <div th:if="${post.comments.isEmpty()}">
+            <p>No comments yet. Be the first to share your thoughts!</p>
+        </div>
+
+    </section>
+
+    <hr/>
+
+<section>
+    <h3>Leave a Comment</h3>
+
+    <div sec:authorize="isAuthenticated()">
+        <form th:action="@{/posts/{postId}/comments(postId=${post.id})}"
+              th:object="${newComment}" method="post">
+
+            <label>Your Comment:</label><br>
+
+            <textarea th:field="*{content}" rows="4" cols="50" required></textarea>
+
+            <br><br>
+            <button type="submit">Submit Comment</button>
+        </form>
+    </div>
+
+    <div sec:authorize="isAnonymous()">
+        <p><a th:href="@{/login}">Log in</a> to leave a comment.</p>
+    </div>
+</section>
+
+
+</body>
+</html>

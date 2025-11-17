@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UserService {
-
+  
     // Dependency on UserRepository for database operations.
     private final UserRepository userRepository;
     

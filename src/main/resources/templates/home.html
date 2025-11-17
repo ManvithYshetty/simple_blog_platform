@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Blog Platform</title>
+</head>
+<body>
+
+    <h1>Welcome to the Blog!</h1>
+
+    <div th:if="${!posts.isEmpty()}">
+        <h2>Recent Posts</h2>
+        <ul>
+            <li th:each="post : ${posts}">
+                <h2>
+                    <a th:href="@{/posts/{id}(id=${post.id})}"
+                       th:text="${post.title}">
+                    </a>
+                </h2>
+
+                <p th:text="${post.content}">Post content will go here...</p>
+            </li>
+        </ul>
+    </div>
+
+
+    <!-- If posts list IS empty -->
+    <div th:if="${posts.isEmpty()}">
+        <p>No posts have been published yet. Check back soon!</p>
+    </div>
+
+</body>
+</html>

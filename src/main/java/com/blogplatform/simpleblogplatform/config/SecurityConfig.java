@@ -20,36 +20,40 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
-            .authorizeHttpRequests(authorize -> authorize
-                // Rule 1: Secure the Admin Dashboard (from the previous task)
+            .csrf(csrf -> csrf.disable())
+            .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
+            .authorizeHttpRequests(auth -> auth
+
+                // MUST BE FIRST
+                .requestMatchers("/h2-console/**").permitAll()
+
+                // Public static files
+                .requestMatchers("/css/**", "/js/**").permitAll()
+
+                // Public pages
+                .requestMatchers(HttpMethod.GET, "/", "/posts", "/posts/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/register", "/login").permitAll()
+                .requestMatchers(HttpMethod.POST, "/register", "/login").permitAll()
+
+                // Admin routes
                 .requestMatchers("/admin/**").hasRole("ADMIN")
 
-                // --- NEW RULE ---
-                // Rule 2: Secure the action of submitting a new comment.
-                // We use HttpMethod.POST to specify that this rule only applies to form submissions.
-                // The path "/posts/*/comments" uses a wildcard (*) to match any post ID.
-                // We use hasAnyRole to allow both standard USERS and ADMINS to comment.
-                .requestMatchers(HttpMethod.POST, "/posts/*/comments").hasAnyRole("USER", "ADMIN")
+                // Comment submission
+                .requestMatchers(HttpMethod.POST, "/posts/*/comments")
+                    .hasAnyRole("USER", "ADMIN")
 
-                // --- REFINED PUBLIC ACCESS RULE ---
-                // Rule 3: Refine Public Access. We explicitly state that only GET requests are public.
-                // This prevents users from trying to POST, PUT, or DELETE to these URLs without being authenticated.
-                .requestMatchers(HttpMethod.GET, "/", "/posts", "/posts/**").permitAll()
-
-                // Other public pages and resources
-                .requestMatchers("/register", "/login", "/css/**", "/js/**").permitAll()
-                
-                // Rule 4: The Catch-All Rule
+                // ANYTHING ELSE must be after all matchers
                 .anyRequest().authenticated()
             )
-            .formLogin(formLogin -> formLogin
+            .formLogin(login -> login
                 .loginPage("/login")
                 .permitAll()
             )
             .logout(logout -> logout
-                .permitAll()
                 .logoutSuccessUrl("/")
+                .permitAll()
             );
 
         return http.build();
