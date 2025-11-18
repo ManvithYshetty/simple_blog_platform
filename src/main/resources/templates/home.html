@@ -10,9 +10,38 @@
 
     <!-- Custom Styling -->
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
         body {
-            background-color: #FFF8E1; /* Soft Cream */
-            color: #3E2723;            /* Dark Coffee Text */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;    /* <-- This pushes footer to bottom */
+        }
+        body {
+            background-color: #FFF8E1;
+            color: #3E2723;
+
+            min-height: 100vh!important;
+            display: flex!important;
+            flex-direction: column!important;            /* Dark Coffee Text */
+        }
+        
+        h2 {
+            color: #6D4C41;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .something{
+            display: flex;
+            flex-direction: column;
+            height: 100%;
         }
         .hero {
             background-color: #6D4C41; /* Warm Brown */
@@ -46,7 +75,7 @@
 
 <!-- NAVBAR -->
   <div th:replace="~{fragments/navbar :: navbar}"></div>
-
+<div class="something">
 <!-- HERO SECTION -->
 <div class="hero">
     <h1 class="fw-bold">Welcome to Simple Blog</h1>
@@ -95,7 +124,7 @@
     </div>
 
 </div>
-
+</div>
 <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

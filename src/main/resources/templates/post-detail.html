@@ -11,6 +11,19 @@
 
     <!-- Custom palette styling -->
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;    /* <-- This pushes footer to bottom */
+        }
         body {
             background-color: #FFF8E1;
             color: #3E2723;
